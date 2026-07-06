@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
-import type { TemperatureUnit } from "../types/unit";
+import { parseTemperatureUnits } from "../utils/parseTemperatureUnit";
+
 import {
   getCoordinatesForCity,
   getWeatherByCoordinates,
@@ -9,13 +10,8 @@ export async function getWeather(req: Request, res: Response): Promise<void> {
   const city = req.params.city;
   const rawUnit = req.query.unit;
 
-  let unit: TemperatureUnit = "celsius";
-
-  if (rawUnit === undefined) {
-    unit = "celsius";
-  } else if (rawUnit === "celsius" || rawUnit === "fahrenheit") {
-    unit = rawUnit;
-  } else {
+  let unit = parseTemperatureUnits(rawUnit);
+  if (unit === null) {
     res.status(400).json({
       error: "Invalid unit. Use celsius or fahrenheit!",
     });
@@ -24,7 +20,7 @@ export async function getWeather(req: Request, res: Response): Promise<void> {
 
   const coords = await getCoordinatesForCity(city);
   if (coords === null) {
-    res.status(404).json({
+    res.status(400).json({
       error: "City not found",
     });
     return;
