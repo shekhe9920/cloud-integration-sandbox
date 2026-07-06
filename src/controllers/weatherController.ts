@@ -44,5 +44,5 @@ export async function getWeather(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  res.json({ weatherData });
+  res.json(weatherData);
 }

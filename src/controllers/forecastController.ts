@@ -5,7 +5,7 @@ import { getForecastByCoordinates } from "../services/forecastService";
 
 export async function getForecast(req: Request, res: Response): Promise<void> {
   const city = req.params.city;
-  const rawUnit = req.query.temperature;
+  const rawUnit = req.query.unit;
 
   let unit: TemperatureUnit;
 
@@ -43,5 +43,5 @@ export async function getForecast(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  res.json({ forecastData });
+  res.json(forecastData);
 }

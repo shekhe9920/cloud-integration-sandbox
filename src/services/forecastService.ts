@@ -1,7 +1,6 @@
 import type { ForecastData, ForecastItem } from "../types/forecast";
 import type { TemperatureUnit } from "../types/unit";
 import type { OpenMeteoCurrentForecastResponse } from "../types/openMeteo";
-import getCoordinatesForCity = require("./openMeteoService");
 
 export async function getForecastByCoordinates(
   city: string,

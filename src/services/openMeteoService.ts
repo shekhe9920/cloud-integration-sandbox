@@ -5,7 +5,14 @@ import type { OpenMeteoCurrentWeatherResponse } from "../types/openMeteo";
 export async function getCoordinatesForCity(
   city: string,
 ): Promise<{ latitude: number; longitude: number } | null> {
-  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`;
+  const encodedCity = encodeURIComponent(city);
+
+  const url =
+    `https://geocoding-api.open-meteo.com/v1/search` +
+    `?name=${encodedCity}` +
+    `&count=1` +
+    `&language=en` +
+    `&format=json`;
 
   try {
     const response = await fetch(url);
