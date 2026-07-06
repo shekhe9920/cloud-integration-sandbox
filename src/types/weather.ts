@@ -1,4 +1,4 @@
-export type TemperatureUnit = "celsius" | "fahrenheit";
+import type { TemperatureUnit } from "../types/unit";
 
 export interface WeatherData {
   city: string;

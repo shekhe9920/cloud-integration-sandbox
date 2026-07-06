@@ -1,15 +1,13 @@
 import type { Request, Response } from "express";
 import type { TemperatureUnit } from "../types/unit";
-import {
-  getCoordinatesForCity,
-  getWeatherByCoordinates,
-} from "../services/openMeteoService";
+import { getCoordinatesForCity } from "../services/openMeteoService";
+import { getForecastByCoordinates } from "../services/forecastService";
 
-export async function getWeather(req: Request, res: Response): Promise<void> {
+export async function getForecast(req: Request, res: Response): Promise<void> {
   const city = req.params.city;
-  const rawUnit = req.query.unit;
+  const rawUnit = req.query.temperature;
 
-  let unit: TemperatureUnit = "celsius";
+  let unit: TemperatureUnit;
 
   if (rawUnit === undefined) {
     unit = "celsius";
@@ -30,19 +28,20 @@ export async function getWeather(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  const weatherData = await getWeatherByCoordinates(
+  const forecastData = await getForecastByCoordinates(
     city,
     coords.latitude,
     coords.longitude,
     unit,
   );
 
-  if (weatherData === null) {
+  if (forecastData === null) {
     res.status(500).json({
-      error: "Failed to fetch weather data",
+      error: "Failed to fetch forecast data",
     });
+
     return;
   }
 
-  res.json({ weatherData });
+  res.json({ forecastData });
 }

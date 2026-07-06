@@ -1,5 +1,6 @@
-import type { WeatherData, TemperatureUnit } from "../types/weather";
-import type { OpenMeteoCurrentResponse } from "../types/openMeteo";
+import type { WeatherData } from "../types/weather";
+import type { TemperatureUnit } from "../types/unit";
+import type { OpenMeteoCurrentWeatherResponse } from "../types/openMeteo";
 
 export async function getCoordinatesForCity(
   city: string,
@@ -44,7 +45,7 @@ export async function getWeatherByCoordinates(
       return null;
     }
 
-    const data = (await response.json()) as OpenMeteoCurrentResponse;
+    const data = (await response.json()) as OpenMeteoCurrentWeatherResponse;
 
     if (
       !data.current ||

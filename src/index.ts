@@ -12,5 +12,7 @@ app.listen(PORT, () => {
   );
   console.log(`Oslo weather: http://localhost:${PORT}/weather/oslo`);
 
+  console.log(`Oslo forecast: http://localhost:${PORT}/forecast/oslo`);
+
   console.log(`\nServer health: http://localhost:${PORT}/health`);
 });
