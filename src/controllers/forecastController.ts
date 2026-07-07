@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getCoordinatesForCity } from "../services/openMeteoService";
+import { getCoordinatesForCity } from "../services/weatherService";
 import { getForecastByCoordinates } from "../services/forecastService";
 import { parseTemperatureUnits } from "../utils/parseTemperatureUnit";
 

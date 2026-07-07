@@ -22,6 +22,7 @@ export async function getCoordinatesForCity(
 
     if (!data.results || data.results.length === 0) return null;
 
+    // console.log(`${data.results[0].latitude}, ${data.results[0].longitude}`);
     return {
       latitude: data.results[0].latitude,
       longitude: data.results[0].longitude,

@@ -4,7 +4,7 @@ import { parseTemperatureUnits } from "../utils/parseTemperatureUnit";
 import {
   getCoordinatesForCity,
   getWeatherByCoordinates,
-} from "../services/openMeteoService";
+} from "../services/weatherService";
 
 export async function getWeather(req: Request, res: Response): Promise<void> {
   const city = req.params.city;
@@ -20,7 +20,7 @@ export async function getWeather(req: Request, res: Response): Promise<void> {
 
   const coords = await getCoordinatesForCity(city);
   if (coords === null) {
-    res.status(400).json({
+    res.status(404).json({
       error: "City not found",
     });
     return;
