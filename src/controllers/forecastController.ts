@@ -3,7 +3,14 @@ import { getCoordinatesForCity } from "../services/weatherService";
 import { getForecastByCoordinates } from "../services/forecastService";
 import { parseTemperatureUnits } from "../utils/parseTemperatureUnit";
 
-export async function getForecast(req: Request, res: Response): Promise<void> {
+type CityParams = {
+  city: string;
+};
+
+export async function getForecast(
+  req: Request<CityParams>,
+  res: Response,
+): Promise<void> {
   const city = req.params.city;
   const rawUnit = req.query.unit;
 
@@ -18,7 +25,7 @@ export async function getForecast(req: Request, res: Response): Promise<void> {
   const coords = await getCoordinatesForCity(city);
   if (coords === null) {
     res.status(404).json({
-      error: "City not found.",
+      error: "City not found",
     });
     return;
   }

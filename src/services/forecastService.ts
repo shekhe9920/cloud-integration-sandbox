@@ -1,6 +1,7 @@
 import type { ForecastData, ForecastItem } from "../types/forecast";
 import type { TemperatureUnit } from "../types/unit";
 import type { OpenMeteoCurrentForecastResponse } from "../types/openMeteo";
+import { convertTemperature } from "../utils/convertTemperature";
 
 export async function getForecastByCoordinates(
   city: string,
@@ -32,25 +33,21 @@ export async function getForecastByCoordinates(
       return null;
     }
 
-    let temperature_max = data.daily.temperature_2m_max;
-    let temperature_min = data.daily.temperature_2m_min;
+    const daily = data.daily;
 
-    if (unit === "fahrenheit") {
-      for (let i = 0; i < temperature_max.length; i++) {
-        temperature_max[i] = (temperature_max[i] * 9) / 5 + 32;
-        temperature_min[i] = (temperature_min[i] * 9) / 5 + 32;
-      }
-    }
-
-    const forecastList: ForecastItem[] = data.daily.time.map(
-      (dateStr, index) => {
+    const forecastList: ForecastItem[] = daily.time.map(
+      (dateStr, index): ForecastItem => {
         return {
           date: dateStr,
-          temperatureMax: temperature_max[index],
-          temperatureMin: temperature_min[index],
-          precipitation: data.daily!.precipitation_sum
-            ? data.daily!.precipitation_sum[index]
-            : 0,
+          temperatureMax: convertTemperature(
+            daily.temperature_2m_max[index],
+            unit,
+          ),
+          temperatureMin: convertTemperature(
+            daily.temperature_2m_min[index],
+            unit,
+          ),
+          precipitation: daily.precipitation_sum?.[index] ?? 0,
         };
       },
     );

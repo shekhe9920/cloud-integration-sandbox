@@ -6,7 +6,14 @@ import {
   getWeatherByCoordinates,
 } from "../services/weatherService";
 
-export async function getWeather(req: Request, res: Response): Promise<void> {
+type CityParams = {
+  city: string;
+};
+
+export async function getWeather(
+  req: Request<CityParams>,
+  res: Response,
+): Promise<void> {
   const city = req.params.city;
   const rawUnit = req.query.unit;
 

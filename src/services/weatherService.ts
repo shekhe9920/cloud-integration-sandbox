@@ -1,6 +1,7 @@
 import type { WeatherData } from "../types/weather";
 import type { TemperatureUnit } from "../types/unit";
 import type { OpenMeteoCurrentWeatherResponse } from "../types/openMeteo";
+import { convertTemperature } from "../utils/convertTemperature";
 
 export async function getCoordinatesForCity(
   city: string,
@@ -66,9 +67,7 @@ export async function getWeatherByCoordinates(
 
     let temperature = data.current.temperature_2m;
 
-    if (unit === "fahrenheit") {
-      temperature = (temperature * 9) / 5 + 32;
-    }
+    temperature = convertTemperature(temperature, unit);
 
     return {
       city,
