@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { getForecastByCoordinates } from "../../src/services/forecastService";
-import { error } from "node:console";
 
 const fakeOpenMeteoResponse = {
   daily: {
