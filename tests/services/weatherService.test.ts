@@ -3,7 +3,6 @@ import {
   getCoordinatesForCity,
   getWeatherByCoordinates,
 } from "../../src/services/weatherService";
-import { accessSync } from "node:fs";
 
 const fakeGeocodingResponse = {
   results: [
@@ -52,8 +51,13 @@ function mockFetchThrows() {
   vi.stubGlobal("fetch", fakeFetch);
 }
 
-describe("getCoordinatesForCity", async () => {
-  it("should return coordinated from mocked fetch response", async () => {
+describe("getCoordinatesForCity", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("should return coordinates from mocked fetch response", async () => {
     mockFetchOk(fakeGeocodingResponse);
 
     const res = await getCoordinatesForCity("oslo");
@@ -114,24 +118,170 @@ describe("getCoordinatesForCity", async () => {
   });
 });
 
-describe("getWeatherByCoordinates", async () => {
-  it("should return weather data from mocked fetch response", async () => {});
+describe("getWeatherByCoordinates", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
 
-  it("should convert temperature to fahrenheit when unit is fahrenheit", async () => {});
+  it("should return weather data from mocked fetch response", async () => {
+    mockFetchOk(fakeOpenMeteoWeatherResponse);
 
-  it("should return null when fetch response is not ok", async () => {});
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "celsius",
+    );
 
-  it("should return null when fetch throws an error", async () => {});
+    expect(res).toEqual({
+      city: "oslo",
+      temperature: 20.1,
+      unit: "celsius",
+      windSpeed: 11.9,
+      condition: "Cloudy",
+    });
+  });
 
-  it("should return null when current weather data is missing from the API response", async () => {});
+  it("should convert temperature to fahrenheit when unit is fahrenheit", async () => {
+    mockFetchOk(fakeOpenMeteoWeatherResponse);
 
-  it("should return null when temperature is missing from the API response", async () => {});
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "fahrenheit",
+    );
 
-  it("should return null when wind speed is missing from the API response", async () => {});
+    expect(res?.unit).toBe("fahrenheit");
+    expect(res?.temperature).toBeCloseTo(68.2);
+  });
 
-  it("should return a condition string based on weather code", async () => {});
+  it("should return null when fetch response is not ok", async () => {
+    mockFetchNotOk();
 
-  it("should return Unknown condition for unknown weather code", async () => {});
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "fahrenheit",
+    );
 
-  it("should call fetch with the correct Open-Meteo weather URL", async () => {});
+    expect(res).toBe(null);
+  });
+
+  it("should return null when fetch throws an error", async () => {
+    const consoleErrSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    mockFetchThrows();
+
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "fahrenheit",
+    );
+
+    expect(res).toBe(null);
+    expect(consoleErrSpy).toHaveBeenCalled();
+  });
+
+  it("should return null when current weather data is missing from the API response", async () => {
+    mockFetchOk({});
+
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "fahrenheit",
+    );
+
+    expect(res).toBe(null);
+  });
+
+  it("should return null when temperature is missing from the API response", async () => {
+    mockFetchOk({
+      current: {
+        wind_speed_10m: 11.9,
+        weather_code: 1,
+      },
+    });
+
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "celsius",
+    );
+
+    expect(res).toBe(null);
+  });
+
+  it("should return null when wind speed is missing from the API response", async () => {
+    mockFetchOk({
+      current: {
+        temperature_2m: 20.1,
+        weather_code: 1,
+      },
+    });
+
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "celsius",
+    );
+
+    expect(res).toBe(null);
+  });
+
+  it("should return a condition string based on weather code", async () => {
+    mockFetchOk(fakeOpenMeteoWeatherResponse);
+
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "celsius",
+    );
+
+    expect(res?.condition).toEqual(expect.any(String));
+    expect(res?.condition).toBe("Cloudy");
+  });
+
+  it("should return Unknown condition for unknown weather code", async () => {
+    mockFetchOk({
+      current: {
+        temperature_2m: 20.1,
+        wind_speed_10m: 11.9,
+        weather_code: -1,
+      },
+    });
+
+    const res = await getWeatherByCoordinates(
+      "oslo",
+      59.91273,
+      10.74609,
+      "celsius",
+    );
+
+    expect(res?.condition).toEqual("Unknown");
+  });
+
+  it("should call fetch with the correct Open-Meteo weather URL", async () => {
+    const fetchSpy = mockFetchOk(fakeOpenMeteoWeatherResponse);
+
+    await getWeatherByCoordinates("oslo", 59.91273, 10.74609, "celsius");
+
+    const url =
+      `https://api.open-meteo.com/v1/forecast` +
+      `?latitude=59.91273` +
+      `&longitude=10.74609` +
+      `&current=temperature_2m,wind_speed_10m,weather_code` +
+      `&timezone=auto`;
+
+    expect(fetchSpy).toHaveBeenCalledWith(url);
+  });
 });
