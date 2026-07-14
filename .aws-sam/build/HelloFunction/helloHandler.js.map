@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "sources": ["../../../../../../../KARWAN~1/AppData/Local/Temp/tmpn9rmdoqm/src/lambdas/helloHandler.ts"],
+  "sources": ["../../../../../../../KARWAN~1/AppData/Local/Temp/tmpybjinga5/src/lambdas/helloHandler.ts"],
   "sourcesContent": ["import type { APIGatewayProxyEvent } from \"aws-lambda\";\r\n\r\nexport async function handler(event: APIGatewayProxyEvent) {\r\n    const userName = event.queryStringParameters?.name || \"guest\";\r\n\r\n    const msg = `Hello ${userName}!`\r\n\r\n    return {\r\n        statusCode: 200,\r\n        headers: {\r\n            \"Content-Type\": \"application/json\" \r\n        },\r\n        body: JSON.stringify({\r\n            message: msg\r\n        })\r\n    }\r\n}"],
   "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEA,eAAsB,QAAQ,OAA6B;AACvD,QAAM,WAAW,MAAM,uBAAuB,QAAQ;AAEtD,QAAM,MAAM,SAAS,QAAQ;AAE7B,SAAO;AAAA,IACH,YAAY;AAAA,IACZ,SAAS;AAAA,MACL,gBAAgB;AAAA,IACpB;AAAA,IACA,MAAM,KAAK,UAAU;AAAA,MACjB,SAAS;AAAA,IACb,CAAC;AAAA,EACL;AACJ;",
   "names": []

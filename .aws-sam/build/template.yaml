@@ -74,3 +74,28 @@ Resources:
         Sourcemap: true
         Target: es2022
       SamResourceId: WeatherFunction
+  ForecastFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ForecastFunction
+      Handler: forecastHandler.handler
+      Runtime: nodejs22.x
+      Timeout: 15
+      Events:
+        WeatherApi:
+          Type: Api
+          Properties:
+            Path: /forecast/{city}
+            Method: get
+      Environment:
+        Variables:
+          NODE_OPTIONS: ' --enable-source-maps'
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+        - src/lambdas/forecastHandler.ts
+        Minify: false
+        Sourcemap: true
+        Target: es2022
+      SamResourceId: ForecastFunction
