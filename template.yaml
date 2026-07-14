@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  HelloFunction:
+    Type: AWS::Serverless::Function
+
+    Properties:
+      CodeUri: .
+      Handler: src/lambdas/helloHandler.handler
+      Runtime: nodejs22.x
+      Events:
+        HelloApi:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: true
+        EntryPoints:
+          - src/lambdas/helloHandler.ts
+
+  HealthFunction:
+    Type: AWS::Serverless::Function
+
+    Properties:
+      CodeUri: .
+      Handler: src/lambdas/healthHandler.handler
+      Runtime: nodejs22.x
+      Events:
+        HealthApi:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: get
+
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: true
+        EntryPoints:
+          - src/lambdas/healthHandler.ts
