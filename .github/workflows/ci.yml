@@ -26,3 +26,17 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      # 1. install AWS SAM CLI on GitHub
+      - name: Set up AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true # install the official package
+
+      # 2. check template.yaml
+      - name: Validate SAM template
+        run: sam validate
+
+      # 3. build Lambda functions
+      - name: Build SAM application
+        run: sam build
