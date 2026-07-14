@@ -2,7 +2,6 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { parseTemperatureUnits } from "../utils/parseTemperatureUnit";
 import { getCoordinatesForCity } from "../services/weatherService";
 import { getForecastByCoordinates } from "../services/forecastService";
-import { error } from "node:console";
 
 export async function handler(
   event: APIGatewayProxyEvent,
