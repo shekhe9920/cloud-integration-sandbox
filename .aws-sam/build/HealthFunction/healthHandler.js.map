@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "sources": ["../../../../../../../KARWAN~1/AppData/Local/Temp/tmpquxztv0d/src/lambdas/healthHandler.ts"],
+  "sources": ["../../../../../../../KARWAN~1/AppData/Local/Temp/tmp9nz7t8yz/src/lambdas/healthHandler.ts"],
   "sourcesContent": ["export async function handler() {\r\n    return {\r\n        statusCode: 200,\r\n        headers: {\r\n            \"Content-Type\": \"application/json\" \r\n        },\r\n        body: JSON.stringify({\r\n            status: \"ok\"\r\n        })\r\n    }\r\n}"],
   "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,eAAsB,UAAU;AAC5B,SAAO;AAAA,IACH,YAAY;AAAA,IACZ,SAAS;AAAA,MACL,gBAAgB;AAAA,IACpB;AAAA,IACA,MAAM,KAAK,UAAU;AAAA,MACjB,QAAQ;AAAA,IACZ,CAAC;AAAA,EACL;AACJ;",
   "names": []

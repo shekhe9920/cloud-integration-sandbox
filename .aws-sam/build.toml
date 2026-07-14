@@ -26,6 +26,9 @@ EntryPoints = ["src/lambdas/helloHandler.ts"]
 
 
 
+
+
+
 [function_build_definitions.8ac8b420-293c-42fa-b235-c34a016f4d8a]
 codeuri = "C:\\Users\\Karwan Shekhe\\Desktop\\projects\\cloud-integration-sandbox"
 runtime = "nodejs22.x"
@@ -43,5 +46,28 @@ Minify = false
 Target = "es2022"
 Sourcemap = true
 EntryPoints = ["src/lambdas/healthHandler.ts"]
+
+
+
+
+[function_build_definitions.eb9b0aad-8d4c-4194-8473-661a679c24bc]
+codeuri = "C:\\Users\\Karwan Shekhe\\Desktop\\projects\\cloud-integration-sandbox"
+runtime = "nodejs22.x"
+architecture = "x86_64"
+handler = "src/lambdas/weatherHandler.handler"
+manifest_hash = ""
+packagetype = "Zip"
+functions = ["WeatherFunction"]
+
+[function_build_definitions.eb9b0aad-8d4c-4194-8473-661a679c24bc.metadata]
+BuildMethod = "esbuild"
+
+[function_build_definitions.eb9b0aad-8d4c-4194-8473-661a679c24bc.metadata.BuildProperties]
+Minify = false
+Target = "es2022"
+Sourcemap = true
+EntryPoints = ["src/lambdas/weatherHandler.ts"]
+
+
 
 [layer_build_definitions]

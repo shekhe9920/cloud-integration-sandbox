@@ -4,7 +4,6 @@ Transform: AWS::Serverless-2016-10-31
 Resources:
   HelloFunction:
     Type: AWS::Serverless::Function
-
     Properties:
       CodeUri: .
       Handler: src/lambdas/helloHandler.handler
@@ -15,7 +14,6 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -27,7 +25,6 @@ Resources:
 
   HealthFunction:
     Type: AWS::Serverless::Function
-
     Properties:
       CodeUri: .
       Handler: src/lambdas/healthHandler.handler
@@ -38,7 +35,6 @@ Resources:
           Properties:
             Path: /health
             Method: get
-
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -47,3 +43,25 @@ Resources:
         Sourcemap: true
         EntryPoints:
           - src/lambdas/healthHandler.ts
+
+  WeatherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src/lambdas/weatherHandler.handler
+      Runtime: nodejs22.x
+      Timeout: 15
+      Events:
+        WeatherApi:
+          Type: Api
+          Properties:
+            Path: /weather/{city}
+            Method: get
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: true
+        EntryPoints:
+          - src/lambdas/weatherHandler.ts
