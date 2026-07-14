@@ -8,6 +8,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      AWS_DEFAULT_REGION: eu-north-1
+      SAM_CLI_TELEMETRY: 0
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
