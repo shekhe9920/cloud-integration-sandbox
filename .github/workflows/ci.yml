@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install esbuild globally
+        run: npm install -g esbuild
+
       - name: Run typecheck
         run: npm run typecheck
 
