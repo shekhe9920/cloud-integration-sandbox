@@ -1,8 +1,26 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../src/app";
 
+vi.mock("../src/services/weatherService", () => ({
+  getCoordinatesForCity: vi.fn(),
+  getWeatherByCoordinates: vi.fn(),
+}));
+vi.mock("../src/services/forecastService", () => ({
+  getForecastByCoordinates: vi.fn(),
+}));
+
+import {
+  getCoordinatesForCity,
+  getWeatherByCoordinates,
+} from "../src/services/weatherService";
+import { getForecastByCoordinates } from "../src/services/forecastService";
+
 describe("API Route Setup Integration Test", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should return welcome message from GET /", async () => {
     const res = await request(app).get("/");
 
@@ -17,40 +35,92 @@ describe("API Route Setup Integration Test", () => {
   });
 
   it("GET /weather/oslo should return 200 OK and weather data for oslo", async () => {
+    vi.mocked(getCoordinatesForCity).mockResolvedValue({
+      latitude: 59.91273,
+      longitude: 10.74609,
+    });
+    vi.mocked(getWeatherByCoordinates).mockResolvedValue({
+      city: "oslo",
+      temperature: 18.5,
+      unit: "celsius",
+      windSpeed: 4.2,
+      condition: "Cloudy",
+    });
+
     const res = await request(app)
       .get("/weather/oslo")
       .set("Accept", "application/json"); // "client tels the server it wants json response"
 
     expect(res.status).toBe(200);
-
-    expect(res.body.city).toBe("oslo");
-    expect(res.body.temperature).toBeTypeOf("number");
-    expect(res.body.unit).toBe("celsius");
-    expect(res.body.windSpeed).toBeTypeOf("number");
-    expect(res.body.condition).toBeTypeOf("string");
+    expect(res.body).toEqual({
+      city: "oslo",
+      temperature: 18.5,
+      unit: "celsius",
+      windSpeed: 4.2,
+      condition: "Cloudy",
+    });
   });
 
   it("GET /forecast/oslo should return 200 OK and forecast data for oslo", async () => {
+    vi.mocked(getCoordinatesForCity).mockResolvedValue({
+      latitude: 59.91273,
+      longitude: 10.74609,
+    });
+
+    vi.mocked(getForecastByCoordinates).mockResolvedValue({
+      city: "oslo",
+      unit: "celsius",
+      forecast: [
+        {
+          date: "2026-07-16",
+          temperatureMax: 32.9,
+          temperatureMin: 23.1,
+          precipitation: 0,
+        },
+        {
+          date: "2026-07-17",
+          temperatureMax: 29.1,
+          temperatureMin: 21.9,
+          precipitation: 0,
+        },
+        {
+          date: "2026-07-18",
+          temperatureMax: 22.5,
+          temperatureMin: 13,
+          precipitation: 20.35,
+        },
+      ],
+    });
+
     const res = await request(app)
       .get("/forecast/oslo")
       .set("Accept", "application/json");
 
-    console.log("Feilmelding fra server:", res.body);
     expect(res.status).toBe(200);
-
-    expect(res.body.city).toBe("oslo");
-
-    expect(res.body.unit).toBe("celsius");
-
-    expect(Array.isArray(res.body.forecast)).toBe(true);
-    expect(res.body.forecast).toHaveLength(3);
-
-    const firsDay = res.body.forecast[0];
-
-    expect(firsDay.date).toBeTypeOf("string");
-    expect(firsDay.temperatureMax).toBeTypeOf("number");
-    expect(firsDay.temperatureMin).toBeTypeOf("number");
-    expect(firsDay.precipitation).toBeTypeOf("number");
+    expect(res.body).toEqual({
+      city: "oslo",
+      unit: "celsius",
+      forecast: [
+        {
+          date: "2026-07-16",
+          temperatureMax: 32.9,
+          temperatureMin: 23.1,
+          precipitation: 0,
+        },
+        {
+          date: "2026-07-17",
+          temperatureMax: 29.1,
+          temperatureMin: 21.9,
+          precipitation: 0,
+        },
+        {
+          date: "2026-07-18",
+          temperatureMax: 22.5,
+          temperatureMin: 13,
+          precipitation: 20.35,
+        },
+      ],
+    });
   });
 
   it("should return 400 error for invalid temperature unit request query", async () => {

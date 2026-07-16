@@ -11,8 +11,6 @@ vi.mock("../../src/services/forecastService", () => ({
 
 import { getForecastByCoordinates } from "../../src/services/forecastService";
 import { getCoordinatesForCity } from "../../src/services/weatherService";
-import { error } from "node:console";
-import path from "node:path";
 
 describe("Test Forecast Handler", () => {
   beforeEach(() => {
