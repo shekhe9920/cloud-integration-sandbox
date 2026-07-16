@@ -7,10 +7,17 @@ type CityParams = {
   city: string;
 };
 
+/**
+ * Express controller for the forecast endpoint.
+ *
+ * Expected route:
+ * GET /forecast/:city?unit=celsius|fahrenheit
+ */
 export async function getForecast(
   req: Request<CityParams>,
   res: Response,
 ): Promise<void> {
+  // Read the city from the route parameter and the optional unit from the query string.
   const city = req.params.city;
   const rawUnit = req.query.unit;
 
@@ -22,6 +29,7 @@ export async function getForecast(
     return;
   }
 
+  // Resolve the city name into coordinates before calling the forecast service.
   const coords = await getCoordinatesForCity(city);
   if (coords === null) {
     res.status(404).json({
@@ -30,6 +38,7 @@ export async function getForecast(
     return;
   }
 
+  // Fetch forecast data in the requested temperature unit.
   const forecastData = await getForecastByCoordinates(
     city,
     coords.latitude,
