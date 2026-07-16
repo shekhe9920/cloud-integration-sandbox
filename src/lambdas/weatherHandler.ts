@@ -6,9 +6,16 @@ import {
 import { parseTemperatureUnits } from "../utils/parseTemperatureUnit";
 import { errorResponse, successResponse } from "./utils/httpResponses";
 
+/**
+ * AWS Lambda handler for the weather endpoint.
+ *
+ * Expected API Gateway route:
+ * GET /weather/{city}?unit=celsius|fahrenheit
+ */
 export async function handler(
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> {
+  // The city comes from the API Gateway path parameter: /weather/{city}.
   const city = event.pathParameters?.city;
   if (!city) {
     return errorResponse(
@@ -18,6 +25,7 @@ export async function handler(
     );
   }
 
+  // The unit query parameter is optional. If it is missing, celsius is used.
   const rawUnit = event.queryStringParameters?.unit;
   const unit = parseTemperatureUnits(rawUnit);
   if (unit === null) {
@@ -29,11 +37,13 @@ export async function handler(
   }
 
   try {
+    // Resolve the city name into coordinates before calling the weather API.
     const coords = await getCoordinatesForCity(city);
     if (coords === null) {
       return errorResponse(404, "Not Found", "City not found");
     }
 
+    // Fetch the normalized weather data used by both Lambda and app tests.
     const weatherData = await getWeatherByCoordinates(
       city,
       coords.latitude,
