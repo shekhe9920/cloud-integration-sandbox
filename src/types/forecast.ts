@@ -1,5 +1,8 @@
 import type { TemperatureUnit } from "../types/unit";
 
+/**
+ * One normalized forecast item for a single date.
+ */
 export interface ForecastItem {
   date: string;
   temperatureMax: number;
@@ -7,6 +10,9 @@ export interface ForecastItem {
   precipitation: number;
 }
 
+/**
+ * Normalized multi-day forecast response returned by this app.
+ */
 export interface ForecastData {
   city: string;
   unit: TemperatureUnit;

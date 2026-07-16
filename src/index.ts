@@ -1,5 +1,5 @@
 /**
- * Starts the server
+ * Start the local Express server.
  */
 
 import app from "./app";

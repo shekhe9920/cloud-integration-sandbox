@@ -1,3 +1,6 @@
+/**
+ * Subset of the Open-Meteo current weather response used by the app.
+ */
 export interface OpenMeteoCurrentWeatherResponse {
   current?: {
     temperature_2m: number;
@@ -6,6 +9,9 @@ export interface OpenMeteoCurrentWeatherResponse {
   };
 }
 
+/**
+ * Subset of the Open-Meteo daily forecast response used by the app.
+ */
 export interface OpenMeteoCurrentForecastResponse {
   daily?: {
     time: string[];
