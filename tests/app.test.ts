@@ -35,6 +35,7 @@ describe("API Route Setup Integration Test", () => {
       .get("/forecast/oslo")
       .set("Accept", "application/json");
 
+    console.log("Feilmelding fra server:", res.body);
     expect(res.status).toBe(200);
 
     expect(res.body.city).toBe("oslo");
