@@ -3,6 +3,11 @@ import type { TemperatureUnit } from "../types/unit";
 import type { OpenMeteoCurrentWeatherResponse } from "../types/openMeteo";
 import { convertTemperature } from "../utils/convertTemperature";
 
+/**
+ * Look up latitude and longitude for a city using the Open-Meteo geocoding API.
+ *
+ * Returns null when the city is not found or the request fails.
+ */
 export async function getCoordinatesForCity(
   city: string,
 ): Promise<{ latitude: number; longitude: number } | null> {
@@ -23,7 +28,7 @@ export async function getCoordinatesForCity(
 
     if (!data.results || data.results.length === 0) return null;
 
-    // console.log(`${data.results[0].latitude}, ${data.results[0].longitude}`);
+    // Use the first geocoding result as the best match for the requested city.
     return {
       latitude: data.results[0].latitude,
       longitude: data.results[0].longitude,
@@ -34,6 +39,11 @@ export async function getCoordinatesForCity(
   }
 }
 
+/**
+ * Fetch current weather for a coordinate pair from Open-Meteo.
+ *
+ * Returns normalized WeatherData for the app, or null if the API response is unusable.
+ */
 export async function getWeatherByCoordinates(
   city: string,
   latitude: number,
@@ -56,6 +66,7 @@ export async function getWeatherByCoordinates(
 
     const data = (await response.json()) as OpenMeteoCurrentWeatherResponse;
 
+    // Ensure the required current-weather fields exist before normalizing the response.
     if (
       !data.current ||
       data.current.temperature_2m === undefined ||
@@ -67,6 +78,7 @@ export async function getWeatherByCoordinates(
 
     let temperature = data.current.temperature_2m;
 
+    // Open-Meteo returns Celsius by default; convert only when requested.
     temperature = convertTemperature(temperature, unit);
 
     return {
@@ -82,6 +94,9 @@ export async function getWeatherByCoordinates(
   }
 }
 
+/**
+ * Convert Open-Meteo weather codes into simple user-facing condition labels.
+ */
 function mapWeatherCodeToCondition(weatherCode: number): string {
   if (weatherCode === 0) {
     return "Clear";

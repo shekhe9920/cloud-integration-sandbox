@@ -3,6 +3,11 @@ import type { TemperatureUnit } from "../types/unit";
 import type { OpenMeteoCurrentForecastResponse } from "../types/openMeteo";
 import { convertTemperature } from "../utils/convertTemperature";
 
+/**
+ * Fetch a 3-day forecast for a coordinate pair from Open-Meteo.
+ *
+ * Returns normalized ForecastData for the app, or null if the API response is unusable.
+ */
 export async function getForecastByCoordinates(
   city: string,
   latitude: number,
@@ -24,6 +29,7 @@ export async function getForecastByCoordinates(
     }
 
     const data = (await response.json()) as OpenMeteoCurrentForecastResponse;
+    // Ensure the required daily forecast arrays exist before mapping the response.
     if (
       !data.daily ||
       data.daily.time === undefined ||
@@ -35,6 +41,7 @@ export async function getForecastByCoordinates(
 
     const daily = data.daily;
 
+    // Map Open-Meteo daily arrays into the app's forecast item shape.
     const forecastList: ForecastItem[] = daily.time.map(
       (dateStr, index): ForecastItem => {
         return {
