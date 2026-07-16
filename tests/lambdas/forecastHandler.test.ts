@@ -1,35 +1,55 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { handler } from "../../src/lambdas/weatherHandler";
+import { handler } from "../../src/lambdas/forecastHandler";
 import { createMockApiGatewayEvent } from "../helpers/mockApiGatewayEvent";
 
 vi.mock("../../src/services/weatherService", () => ({
   getCoordinatesForCity: vi.fn(),
-  getWeatherByCoordinates: vi.fn(),
+}));
+vi.mock("../../src/services/forecastService", () => ({
+  getForecastByCoordinates: vi.fn(),
 }));
 
-import {
-  getCoordinatesForCity,
-  getWeatherByCoordinates,
-} from "../../src/services/weatherService";
+import { getForecastByCoordinates } from "../../src/services/forecastService";
+import { getCoordinatesForCity } from "../../src/services/weatherService";
+import { error } from "node:console";
+import path from "node:path";
 
-describe("Test Weather Handler", () => {
+describe("Test Forecast Handler", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should successfully return weather data", async () => {
+  it("should successfully return forecast data", async () => {
     vi.mocked(getCoordinatesForCity).mockResolvedValue({
       latitude: 59.91273,
       longitude: 10.74609,
     });
 
-    vi.mocked(getWeatherByCoordinates).mockResolvedValue({
+    vi.mocked(getForecastByCoordinates).mockResolvedValue({
       city: "oslo",
-      temperature: 18.5,
       unit: "celsius",
-      windSpeed: 4.2,
-      condition: "Cloudy",
+      forecast: [
+        {
+          date: "2026-07-16",
+          temperatureMax: 32.9,
+          temperatureMin: 23.1,
+          precipitation: 0,
+        },
+        {
+          date: "2026-07-17",
+          temperatureMax: 29.1,
+          temperatureMin: 21.9,
+          precipitation: 0,
+        },
+        {
+          date: "2026-07-18",
+          temperatureMax: 22.5,
+          temperatureMin: 13,
+          precipitation: 20.35,
+        },
+      ],
     });
+
     const mockEvent = createMockApiGatewayEvent({
       pathParameters: {
         city: "oslo",
@@ -41,21 +61,38 @@ describe("Test Weather Handler", () => {
 
     const res = await handler(mockEvent);
 
-    const bodyObject = JSON.parse(res.body);
+    const body = JSON.parse(res.body);
 
     expect(res.statusCode).toBe(200);
-    expect(bodyObject).toEqual({
+    expect(body).toEqual({
       data: {
         city: "oslo",
-        temperature: 18.5,
         unit: "celsius",
-        windSpeed: 4.2,
-        condition: "Cloudy",
+        forecast: [
+          {
+            date: "2026-07-16",
+            temperatureMax: 32.9,
+            temperatureMin: 23.1,
+            precipitation: 0,
+          },
+          {
+            date: "2026-07-17",
+            temperatureMax: 29.1,
+            temperatureMin: 21.9,
+            precipitation: 0,
+          },
+          {
+            date: "2026-07-18",
+            temperatureMax: 22.5,
+            temperatureMin: 13,
+            precipitation: 20.35,
+          },
+        ],
       },
     });
   });
 
-  it("should return Bad Request if city is null", async () => {
+  it("should return Bad Request if city is missing", async () => {
     const mockEvent = createMockApiGatewayEvent({
       pathParameters: {},
       queryStringParameters: {
@@ -64,17 +101,16 @@ describe("Test Weather Handler", () => {
     });
 
     const res = await handler(mockEvent);
-
-    const bodyObject = JSON.parse(res.body);
+    const body = JSON.parse(res.body);
 
     expect(res.statusCode).toBe(400);
-    expect(bodyObject).toEqual({
+    expect(body).toEqual({
       error: "Bad Request",
       message: "Missing 'city' parameter in the URL",
     });
   });
 
-  it("should return Bad Request if unit is null", async () => {
+  it("should return Bad Request if invalid unit is given", async () => {
     const mockEvent = createMockApiGatewayEvent({
       pathParameters: {
         city: "oslo",
@@ -85,11 +121,10 @@ describe("Test Weather Handler", () => {
     });
 
     const res = await handler(mockEvent);
-
-    const bodyObject = JSON.parse(res.body);
+    const body = JSON.parse(res.body);
 
     expect(res.statusCode).toBe(400);
-    expect(bodyObject).toEqual({
+    expect(body).toEqual({
       error: "Bad Request",
       message: "Invalid unit. Use celsius or fahrenheit",
     });
@@ -100,28 +135,30 @@ describe("Test Weather Handler", () => {
 
     const mockEvent = createMockApiGatewayEvent({
       pathParameters: {
-        city: "venus",
+        city: "Bob",
+      },
+      queryStringParameters: {
+        unit: "celsius",
       },
     });
 
     const res = await handler(mockEvent);
-
-    const bodyObject = JSON.parse(res.body);
+    const body = JSON.parse(res.body);
 
     expect(res.statusCode).toBe(404);
-    expect(bodyObject).toEqual({
+    expect(body).toEqual({
       error: "Not Found",
       message: "City not found",
     });
   });
 
-  it("should return Internal Server Error if it fails to fetch weather data", async () => {
+  it("should return 500 if forecast data is null", async () => {
     vi.mocked(getCoordinatesForCity).mockResolvedValue({
       latitude: 59.91273,
       longitude: 10.74609,
     });
 
-    vi.mocked(getWeatherByCoordinates).mockResolvedValue(null);
+    vi.mocked(getForecastByCoordinates).mockResolvedValue(null);
 
     const mockEvent = createMockApiGatewayEvent({
       pathParameters: {
@@ -133,37 +170,32 @@ describe("Test Weather Handler", () => {
     });
 
     const res = await handler(mockEvent);
-
-    const bodyObject = JSON.parse(res.body);
+    const body = JSON.parse(res.body);
 
     expect(res.statusCode).toBe(500);
-    expect(bodyObject).toEqual({
+    expect(body).toEqual({
       error: "Internal Server Error",
-      message: "Failed to fetch weather data",
+      message: "Failed to fetch forecast data",
     });
   });
 
-  it("should catch exception when getWeatherByCoordinates throws error", async () => {
+  it("should catch exception when getForecastByCoordinates throws error", async () => {
     vi.mocked(getCoordinatesForCity).mockResolvedValue({
       latitude: 59.91273,
       longitude: 10.74609,
     });
 
-    vi.mocked(getWeatherByCoordinates).mockRejectedValue(
-      new Error("Weather API failed"),
+    vi.mocked(getForecastByCoordinates).mockRejectedValue(
+      new Error("Forecast fetch failed!"),
     );
 
-    const mockEvent = createMockApiGatewayEvent({
+    const mockedEvent = createMockApiGatewayEvent({
       pathParameters: {
         city: "oslo",
       },
-      queryStringParameters: {
-        unit: "celsius",
-      },
     });
 
-    const res = await handler(mockEvent);
-
+    const res = await handler(mockedEvent);
     const body = JSON.parse(res.body);
 
     expect(res.statusCode).toBe(500);
