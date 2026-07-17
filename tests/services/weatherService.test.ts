@@ -107,12 +107,8 @@ describe("getCoordinatesForCity", () => {
 
     await getCoordinatesForCity("oslo");
 
-    const url =
-      `https://geocoding-api.open-meteo.com/v1/search` +
-      `?name=oslo` +
-      `&count=1` +
-      `&language=en` +
-      `&format=json`;
+    const baseUrl = process.env.GEOCODING_API_URL;
+    const url = `${baseUrl}?name=oslo&count=1&language=en&format=json`;
 
     expect(fetchSpy).toHaveBeenCalledWith(url);
   });
@@ -275,12 +271,8 @@ describe("getWeatherByCoordinates", () => {
 
     await getWeatherByCoordinates("oslo", 59.91273, 10.74609, "celsius");
 
-    const url =
-      `https://api.open-meteo.com/v1/forecast` +
-      `?latitude=59.91273` +
-      `&longitude=10.74609` +
-      `&current=temperature_2m,wind_speed_10m,weather_code` +
-      `&timezone=auto`;
+    const baseUrl = process.env.WEATHER_API_URL;
+    const url = `${baseUrl}?latitude=59.91273&longitude=10.74609&current=temperature_2m,wind_speed_10m,weather_code&timezone=auto`;
 
     expect(fetchSpy).toHaveBeenCalledWith(url);
   });
