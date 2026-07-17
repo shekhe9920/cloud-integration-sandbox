@@ -1,12 +1,20 @@
+const weatherApiUrl = process.env.WEATHER_API_URL;
+
+// The forecast service depends on the weather API base URL being configured.
+if (!weatherApiUrl) {
+  throw new Error("Missing required environment variables");
+}
+
 import type { ForecastData, ForecastItem } from "../types/forecast";
 import type { TemperatureUnit } from "../types/unit";
 import type { OpenMeteoCurrentForecastResponse } from "../types/openMeteo";
 import { convertTemperature } from "../utils/convertTemperature";
 
 /**
- * Fetch a 3-day forecast for a coordinate pair from Open-Meteo.
+ * Fetch a 3-day forecast for a coordinate pair using the configured weather API.
  *
- * Returns normalized ForecastData for the app, or null if the API response is unusable.
+ * The base URL comes from WEATHER_API_URL. The response is normalized into the
+ * app's ForecastData shape, or null if required data is missing.
  */
 export async function getForecastByCoordinates(
   city: string,
@@ -15,7 +23,7 @@ export async function getForecastByCoordinates(
   unit: TemperatureUnit,
 ): Promise<ForecastData | null> {
   const url =
-    `https://api.open-meteo.com/v1/forecast` +
+    weatherApiUrl +
     `?latitude=${latitude}` +
     `&longitude=${longitude}` +
     `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum` +

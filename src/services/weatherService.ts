@@ -1,12 +1,21 @@
+const geocodingApiUrl = process.env.GEOCODING_API_URL;
+const weatherApiUrl = process.env.WEATHER_API_URL;
+
+// The service layer depends on API base URLs being provided through environment variables.
+if (!geocodingApiUrl || !weatherApiUrl) {
+  throw new Error("Missing required environment variables");
+}
+
 import type { WeatherData } from "../types/weather";
 import type { TemperatureUnit } from "../types/unit";
 import type { OpenMeteoCurrentWeatherResponse } from "../types/openMeteo";
 import { convertTemperature } from "../utils/convertTemperature";
 
 /**
- * Look up latitude and longitude for a city using the Open-Meteo geocoding API.
+ * Look up latitude and longitude for a city using the configured geocoding API.
  *
- * Returns null when the city is not found or the request fails.
+ * The base URL comes from GEOCODING_API_URL. Returns null when the city is not
+ * found, the API returns a non-OK response, or the request fails.
  */
 export async function getCoordinatesForCity(
   city: string,
@@ -14,7 +23,7 @@ export async function getCoordinatesForCity(
   const encodedCity = encodeURIComponent(city);
 
   const url =
-    `https://geocoding-api.open-meteo.com/v1/search` +
+    geocodingApiUrl +
     `?name=${encodedCity}` +
     `&count=1` +
     `&language=en` +
@@ -40,9 +49,10 @@ export async function getCoordinatesForCity(
 }
 
 /**
- * Fetch current weather for a coordinate pair from Open-Meteo.
+ * Fetch current weather for a coordinate pair using the configured weather API.
  *
- * Returns normalized WeatherData for the app, or null if the API response is unusable.
+ * The base URL comes from WEATHER_API_URL. The response is normalized into the
+ * app's WeatherData shape, or null if required data is missing.
  */
 export async function getWeatherByCoordinates(
   city: string,
@@ -51,7 +61,7 @@ export async function getWeatherByCoordinates(
   unit: TemperatureUnit,
 ): Promise<WeatherData | null> {
   const url =
-    `https://api.open-meteo.com/v1/forecast` +
+    weatherApiUrl +
     `?latitude=${latitude}` +
     `&longitude=${longitude}` +
     `&current=temperature_2m,wind_speed_10m,weather_code` +

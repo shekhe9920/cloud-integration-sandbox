@@ -31,6 +31,26 @@ Install dependencies:
 npm install
 ```
 
+Create a local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Required environment variables:
+
+```text
+GEOCODING_API_URL=https://geocoding-api.open-meteo.com/v1/search
+WEATHER_API_URL=https://api.open-meteo.com/v1/forecast
+```
+
+Commit `.env.example` so other developers can see the required config. Do not
+commit `.env`, because it is for local environment values only.
+
+The app reads these values from `process.env`, so make sure your local runtime
+loads `.env` or that the variables are exported in your shell before starting
+the server.
+
 Start the development server:
 
 ```bash
