@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../AppData/Local/Temp/tmpfczzvw3t/src/lambdas/helloHandler.ts"],
-  "sourcesContent": ["import type { APIGatewayProxyEvent } from \"aws-lambda\";\nimport type { error } from \"node:console\";\n\n/**\n * AWS Lambda handler for a simple greeting endpoint.\n *\n * Expected API Gateway route:\n * GET /hello?name=your-name\n */\nexport async function handler(event: APIGatewayProxyEvent) {\n  // The name query parameter is optional. If it is missing, guest is used.\n  const userName = event.queryStringParameters?.name || \"guest\";\n\n  const msg = `Hello ${userName}!`;\n\r\n  return {\r\n    statusCode: 200,\r\n    headers: {\r\n      \"Content-Type\": \"application/json\",\r\n    },\r\n    body: JSON.stringify({\r\n      message: msg,\r\n    }),\r\n  };\r\n}\r\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AASA,eAAsB,QAAQ,OAA6B;AAEzD,QAAM,WAAW,MAAM,uBAAuB,QAAQ;AAEtD,QAAM,MAAM,SAAS,QAAQ;AAE7B,SAAO;AAAA,IACL,YAAY;AAAA,IACZ,SAAS;AAAA,MACP,gBAAgB;AAAA,IAClB;AAAA,IACA,MAAM,KAAK,UAAU;AAAA,MACnB,SAAS;AAAA,IACX,CAAC;AAAA,EACH;AACF;",
-  "names": []
-}
