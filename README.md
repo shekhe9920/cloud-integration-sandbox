@@ -49,7 +49,7 @@ commit `.env`, because it is for local environment values only.
 
 The app reads these values from `process.env`, so make sure your local runtime
 loads `.env` or that the variables are exported in your shell before starting
-the server.
+the server.KsØ
 
 Start the development server:
 

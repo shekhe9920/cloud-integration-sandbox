@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": ["../../../../../../../KARWAN~1/AppData/Local/Temp/tmp02yjol0x/src/lambdas/healthHandler.ts"],
-  "sourcesContent": ["export async function handler() {\r\n    return {\r\n        statusCode: 200,\r\n        headers: {\r\n            \"Content-Type\": \"application/json\" \r\n        },\r\n        body: JSON.stringify({\r\n            status: \"ok\"\r\n        })\r\n    }\r\n}"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,eAAsB,UAAU;AAC5B,SAAO;AAAA,IACH,YAAY;AAAA,IACZ,SAAS;AAAA,MACL,gBAAgB;AAAA,IACpB;AAAA,IACA,MAAM,KAAK,UAAU;AAAA,MACjB,QAAQ;AAAA,IACZ,CAAC;AAAA,EACL;AACJ;",
+  "sources": ["../../../../../../AppData/Local/Temp/tmp1enbemi1/src/lambdas/healthHandler.ts"],
+  "sourcesContent": ["/**\n * AWS Lambda handler for the health endpoint.\n *\n * Expected API Gateway route:\n * GET /health\n */\nexport async function handler() {\n    return {\n        statusCode: 200,\n        headers: {\r\n            \"Content-Type\": \"application/json\" \r\n        },\r\n        body: JSON.stringify({\r\n            status: \"ok\"\r\n        })\r\n    }\r\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAMA,eAAsB,UAAU;AAC5B,SAAO;AAAA,IACH,YAAY;AAAA,IACZ,SAAS;AAAA,MACL,gBAAgB;AAAA,IACpB;AAAA,IACA,MAAM,KAAK,UAAU;AAAA,MACjB,QAAQ;AAAA,IACZ,CAAC;AAAA,EACL;AACJ;",
   "names": []
 }

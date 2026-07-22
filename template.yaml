@@ -1,6 +1,13 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
+Globals:
+  Function:
+    Environment:
+      Variables:
+        GEOCODING_API_URL: https://geocoding-api.open-meteo.com/v1/search
+        WEATHER_API_URL: https://api.open-meteo.com/v1/forecast
+
 Resources:
   HelloFunction:
     Type: AWS::Serverless::Function

@@ -45,9 +45,14 @@ function convertTemperature(temp, unit) {
 }
 
 // src/services/weatherService.ts
+var geocodingApiUrl = process.env.GEOCODING_API_URL;
+var weatherApiUrl = process.env.WEATHER_API_URL;
+if (!geocodingApiUrl || !weatherApiUrl) {
+  throw new Error("Missing required environment variables");
+}
 async function getCoordinatesForCity(city) {
   const encodedCity = encodeURIComponent(city);
-  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodedCity}&count=1&language=en&format=json`;
+  const url = geocodingApiUrl + `?name=${encodedCity}&count=1&language=en&format=json`;
   try {
     const response = await fetch(url);
     if (!response.ok) return null;
@@ -64,8 +69,12 @@ async function getCoordinatesForCity(city) {
 }
 
 // src/services/forecastService.ts
+var weatherApiUrl2 = process.env.WEATHER_API_URL;
+if (!weatherApiUrl2) {
+  throw new Error("Missing required environment variables");
+}
 async function getForecastByCoordinates(city, latitude, longitude, unit) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=3&timezone=auto`;
+  const url = weatherApiUrl2 + `?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=3&timezone=auto`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -103,48 +112,54 @@ async function getForecastByCoordinates(city, latitude, longitude, unit) {
   }
 }
 
+// src/lambdas/utils/httpResponses.ts
+function errorResponse(statusCode, errMsg, msg) {
+  return {
+    statusCode,
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      error: errMsg,
+      message: msg
+    })
+  };
+}
+function successResponse(data) {
+  return {
+    statusCode: 200,
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      data
+    })
+  };
+}
+
 // src/lambdas/forecastHandler.ts
 async function handler(event) {
   const city = event.pathParameters?.city;
   if (!city) {
-    return {
-      statusCode: 400,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        error: "Bad Request",
-        message: "Missing 'city' parameter in the URL"
-      })
-    };
+    return errorResponse(
+      400,
+      "Bad Request",
+      "Missing 'city' parameter in the URL"
+    );
   }
   const rawUnit = event.queryStringParameters?.unit;
-  let unit = parseTemperatureUnits(rawUnit);
+  const unit = parseTemperatureUnits(rawUnit);
   if (unit === null) {
-    return {
-      statusCode: 400,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        error: "Bad Request",
-        message: "Invalid unit. Use celsius or fahrenheit"
-      })
-    };
+    return errorResponse(
+      400,
+      "Bad Request",
+      "Invalid unit. Use celsius or fahrenheit"
+    );
   }
   try {
     const coords = await getCoordinatesForCity(city);
     if (coords === null) {
-      return {
-        statusCode: 404,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          error: "Bad Request",
-          message: "City not found"
-        })
-      };
+      return errorResponse(404, "Not Found", "City not found");
     }
     const forecastData = await getForecastByCoordinates(
       city,
@@ -153,38 +168,20 @@ async function handler(event) {
       unit
     );
     if (forecastData === null) {
-      return {
-        statusCode: 500,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          error: "Internal Server Error",
-          message: "Failed to fetch forecast data"
-        })
-      };
+      return errorResponse(
+        500,
+        "Internal Server Error",
+        "Failed to fetch forecast data"
+      );
     }
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        forecastData
-      })
-    };
+    return successResponse(forecastData);
   } catch (error) {
     console.error("Forecast Lambda failed: ", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        error: "Internal Server Error",
-        message: "An unexpected error occurred"
-      })
-    };
+    return errorResponse(
+      500,
+      "Internal Server Error",
+      "An unexpected error occurred"
+    );
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
