@@ -42,8 +42,8 @@ jobs:
 
       # 2. check template.yaml
       - name: Validate SAM template
-        run: sam validate
+        run: sam validate --template-file infrastructure/template.yaml
 
       # 3. build Lambda functions
       - name: Build SAM application
-        run: sam build
+        run: sam build --template-file infrastructure/template.yaml
