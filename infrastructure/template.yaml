@@ -12,7 +12,7 @@ Resources:
   HelloFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
+      CodeUri: ../apps/api
       Handler: src/lambdas/helloHandler.handler
       Runtime: nodejs22.x
       Events:
@@ -33,7 +33,7 @@ Resources:
   HealthFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
+      CodeUri: ../apps/api
       Handler: src/lambdas/healthHandler.handler
       Runtime: nodejs22.x
       Events:
@@ -54,7 +54,7 @@ Resources:
   WeatherFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
+      CodeUri: ../apps/api
       Handler: src/lambdas/weatherHandler.handler
       Runtime: nodejs22.x
       Timeout: 15
@@ -76,7 +76,7 @@ Resources:
   ForecastFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
+      CodeUri: ../apps/api
       Handler: src/lambdas/forecastHandler.handler
       Runtime: nodejs22.x
       Timeout: 15
