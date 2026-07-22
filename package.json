@@ -12,6 +12,7 @@
         "test:api": "npm run test --workspace @cloud-integration-sandbox/api -- --run",
         "typecheck:api": "npm run typecheck --workspace @cloud-integration-sandbox/api",
         "typecheck:web": "npm run typecheck --workspace apps/web",
+        "typecheck": "npm run typecheck:api && npm run typecheck:web",
         "build:api": "sam build --template-file infrastructure/template.yaml",
         "build:web": "npm run build --workspace apps/web",
         "deploy:api": "sam deploy --config-file infrastructure/samconfig.toml"
