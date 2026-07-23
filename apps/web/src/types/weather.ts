@@ -1,4 +1,4 @@
-export type TemperatureUnit = "celsius" | "fahrenheit";
+import type { TemperatureUnit } from "./unit";
 
 export type WeatherData = {
   city: string;
